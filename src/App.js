@@ -1,24 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import { BeerCard } from "./BeerCard";
+import { Button } from "./Button";
 
 function App() {
+  const [beers, setBeers] = useState([]);
+  const [pageNb, setPageNb] = useState(1);
+
+  useEffect(() => {
+    fetch(`https://api.punkapi.com/v2/beers?page=${pageNb}`)
+      .then(response => response.json())
+      .then(setBeers);
+  }, [pageNb]);
+
+  function incrementPageNb() {
+    setPageNb(pageNb + 1);
+  }
+  function decrementPageNb() {
+    if (pageNb !== 1) setPageNb(pageNb - 1);
+  }
+  const listBeers = beers.map(beer => <BeerCard key={beer.id} beer={beer} />);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ul>{listBeers}</ul>
+      <Button value="Previous" onClick={decrementPageNb} />
+
+      <Button value="Next" onClick={incrementPageNb} />
     </div>
   );
 }
